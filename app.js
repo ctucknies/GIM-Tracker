@@ -3,6 +3,10 @@ const API = 'https://api.wiseoldman.net/v2';
 let currentPlayer = 'Drykeys';
 let currentPlayerWom = null; // Store WOM data for current player
 
+function itemIcon(itemId) {
+    return `https://chisel.weirdgloop.org/static/img/osrs-sprite/${itemId}.png`;
+}
+
 function fmt(n) { return n === -1 ? '—' : n.toLocaleString(); }
 
 function catNameToBossKey(catName) {
@@ -127,7 +131,7 @@ function displayCatName(name) {
 async function getPlayer() { const r=await fetch(`${API}/players/${currentPlayer.toLowerCase().replace(/\s+/g,'%20')}`); if(!r.ok) throw new Error(); return r.json(); }
 async function getAchievements() { const r=await fetch(`${API}/players/${currentPlayer.toLowerCase().replace(/\s+/g,'%20')}/achievements`); if(!r.ok) throw new Error(); return r.json(); }
 async function getClog() {
-    const filename=`collection_log_${currentPlayer.toLowerCase().replace(/\s+/g,'_')}.json`;
+    const filename=`data/collection_log_${currentPlayer.toLowerCase().replace(/\s+/g,'_')}.json`;
     const r=await fetch(filename);
     if(!r.ok) return null;
     return r.json();
@@ -272,7 +276,7 @@ function renderClog(data) {
         document.getElementById('clog-list').innerHTML=items.length?items.map(i=>{
             const src=i.sources?i.sources.map(x=>x.name).filter((v,idx,a)=>a.indexOf(v)===idx).join(', '):'';
             return `<div class="clog-item${miss?' missing':''}">
-                <div class="clog-icon"><img src="https://secure.runescape.com/m=itemdb_oldschool/obj_big.gif?id=${i.itemId}" alt="" onerror="this.style.display='none'"/></div>
+                <div class="clog-icon"><img src="${itemIcon(i.itemId)}" alt="" loading="lazy" onerror="this.style.opacity='0.3';this.onerror=null"/></div>
                 <div class="clog-info"><div class="clog-name">${i.name}</div><div class="clog-source">${src?src+' · ':''}${i.tab}</div></div>
                 <div><div class="clog-price">${i.price>0?gp(i.price):'—'}</div>${i.quantity>1?`<div class="clog-qty">x${fmt(i.quantity)}</div>`:''}</div>
             </div>`;
@@ -301,7 +305,7 @@ function renderClog(data) {
                     const isObtained = i.quantity !== undefined || (i.sources && i.sources[0]?.type !== undefined);
                     const src = i.sources ? i.sources.map(x=>x.name).filter((v,idx,a)=>a.indexOf(v)===idx).join(', ') : '';
                     return `<div class="clog-item${!isObtained?' missing':''}">
-                        <div class="clog-icon"><img src="https://secure.runescape.com/m=itemdb_oldschool/obj_big.gif?id=${i.itemId}" alt="" onerror="this.style.display='none'"/></div>
+                        <div class="clog-icon"><img src="${itemIcon(i.itemId)}" alt="" loading="lazy" onerror="this.style.opacity='0.3';this.onerror=null"/></div>
                         <div class="clog-info"><div class="clog-name">${i.name}</div><div class="clog-source">${src ? src + ' · ' : ''}${displayCatName(i.category)}</div></div>
                         <div><div class="clog-price">${i.price>0?gp(i.price):'—'}</div></div>
                     </div>`;
@@ -359,7 +363,7 @@ function renderClog(data) {
                 const isObtained = i.quantity!==undefined || (i.sources && i.sources[0]?.type!==undefined);
                 const src=i.sources?i.sources.map(x=>x.name).filter((v,idx,a)=>a.indexOf(v)===idx).join(', '):'';
                 return `<div class="clog-item${!isObtained?' missing':''}">
-                    <div class="clog-icon"><img src="https://secure.runescape.com/m=itemdb_oldschool/obj_big.gif?id=${i.itemId}" alt="" onerror="this.style.display='none'"/></div>
+                    <div class="clog-icon"><img src="${itemIcon(i.itemId)}" alt="" loading="lazy" onerror="this.style.opacity='0.3';this.onerror=null"/></div>
                     <div class="clog-info"><div class="clog-name">${i.name}</div>${src?`<div class="clog-source">${src}</div>`:''}</div>
                     <div><div class="clog-price">${i.price>0?gp(i.price):'—'}</div>${i.quantity>1?`<div class="clog-qty">x${fmt(i.quantity)}</div>`:''}</div>
                 </div>`;
@@ -388,8 +392,8 @@ async function renderGroup() {
 
     // Load both players' clog data
     const [dryData, salisaData] = await Promise.all([
-        fetch('collection_log_drykeys.json').then(r=>r.ok?r.json():null).catch(()=>null),
-        fetch('collection_log_salisa_taka.json').then(r=>r.ok?r.json():null).catch(()=>null)
+        fetch('data/collection_log_drykeys.json').then(r=>r.ok?r.json():null).catch(()=>null),
+        fetch('data/collection_log_salisa_taka.json').then(r=>r.ok?r.json():null).catch(()=>null)
     ]);
 
     // Load both players' WOM data for boss kills
@@ -409,7 +413,7 @@ async function renderGroup() {
             bossKills[name].players[playerName] = data.kills;
         }
     }
-    addBossKills(dryWom, 'DryKeys');
+    addBossKills(dryWom, 'Drykeys');
     addBossKills(salisaWom, 'Salisa Taka');
 
     const sortedBosses = Object.entries(bossKills).sort((a,b) => b[1].total - a[1].total);
@@ -428,7 +432,7 @@ async function renderGroup() {
         return;
     }
 
-    const wikiItems = JSON.parse(await fetch('clog_items_wiki.json').then(r=>r.text()));
+    const wikiItems = JSON.parse(await fetch('data/clog_items_wiki.json').then(r=>r.text()));
     const clogItemsById = new Map();
     for (const key of Object.keys(wikiItems)) {
         const entry = wikiItems[key];
@@ -453,7 +457,7 @@ async function renderGroup() {
         const dryHas = dryObtainedSet.has(itemId);
         const salisaHas = salisaObtainedSet.has(itemId);
         const owners = [];
-        if (dryHas) owners.push('DryKeys');
+        if (dryHas) owners.push('Drykeys');
         if (salisaHas) owners.push('Salisa Taka');
 
         if (owners.length > 0) mergedCategories[cat].obtained++;
@@ -495,7 +499,7 @@ async function renderGroup() {
                 resultsEl.innerHTML = `<div class="clog-list" style="margin-bottom:12px">${matchingItems.slice(0, 30).map(i => {
                     const ownerStr = i.owners.length ? i.owners.join(', ') : '';
                     return `<div class="clog-item${!i.obtained?' missing':''}">
-                        <div class="clog-icon"><img src="https://secure.runescape.com/m=itemdb_oldschool/obj_big.gif?id=${i.itemId}" alt="" onerror="this.style.display='none'"/></div>
+                        <div class="clog-icon"><img src="${itemIcon(i.itemId)}" alt="" loading="lazy" onerror="this.style.opacity='0.3';this.onerror=null"/></div>
                         <div class="clog-info"><div class="clog-name">${i.name}</div><div class="clog-source">${ownerStr ? ownerStr + ' · ' : ''}${displayCatName(i.category)}</div></div>
                     </div>`;
                 }).join('')}${matchingItems.length > 30 ? '<div class="empty-msg">...and ' + (matchingItems.length - 30) + ' more</div>' : ''}</div>`;
@@ -535,7 +539,7 @@ async function renderGroup() {
         let kcStr = '';
         if (totalKc > 0) {
             const parts = [];
-            if (dryKc) parts.push(`DryKeys: ${fmt(dryKc)}`);
+            if (dryKc) parts.push(`Drykeys: ${fmt(dryKc)}`);
             if (salisaKc) parts.push(`Salisa Taka: ${fmt(salisaKc)}`);
             kcStr = ` · ${fmt(totalKc)} kc (${parts.join(', ')})`;
         }
@@ -555,7 +559,7 @@ async function renderGroup() {
             <div class="clog-list">${sorted.map(i => {
                 const ownerStr = i.owners.length ? i.owners.join(', ') : '';
                 return `<div class="clog-item${!i.obtained?' missing':''}">
-                    <div class="clog-icon"><img src="https://secure.runescape.com/m=itemdb_oldschool/obj_big.gif?id=${i.itemId}" alt="" onerror="this.style.display='none'"/></div>
+                    <div class="clog-icon"><img src="${itemIcon(i.itemId)}" alt="" loading="lazy" onerror="this.style.opacity='0.3';this.onerror=null"/></div>
                     <div class="clog-info">
                         <div class="clog-name">${i.name}</div>
                         ${ownerStr ? `<div class="clog-source">${ownerStr}</div>` : ''}
@@ -597,7 +601,7 @@ function switchPlayer(name) {
     if (name === 'Group') {
         document.querySelectorAll('.player-btn').forEach(b => b.classList.toggle('active', b.dataset.player === 'Group'));
         document.getElementById('player-title').textContent = 'Group';
-        document.getElementById('header-meta').textContent = 'DryKeys + Salisa Taka';
+        document.getElementById('header-meta').textContent = 'Drykeys + Salisa Taka';
         // Swap tab bar to group tabs
         document.getElementById('tab-bar').innerHTML = `
             <button class="tab active" data-tab="group-bosses">Bosses</button>

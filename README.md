@@ -4,13 +4,13 @@ Collection log and stats tracker for our Group Ironman team. Pulls live player d
 
 ## Players
 
-- **DryKeys**
+- **Drykeys**
 - **Salisa Taka**
 
 ## Features
 
 - Player stats (skills, boss KC, activities, achievements)
-- Full collection log (310/1706 items tracked for DryKeys)
+- Full collection log (310/1706 items tracked for Drykeys)
 - Per-boss/source category view with KC counts
 - Group merged view showing combined progress and who has what
 - Item search across all categories

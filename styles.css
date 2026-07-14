@@ -56,6 +56,7 @@ body {
     background: var(--panel-dark);
     box-shadow:
         inset 0 0 0 1px var(--border-inner);
+    overflow-x: hidden;
 }
 
 .frame-header {
@@ -144,7 +145,7 @@ body {
     background: var(--panel);
     border-bottom: 2px solid var(--border-gold);
     border-top: 1px solid var(--border-inner);
-    overflow-x: auto;
+    overflow: hidden;
 }
 
 .tab {

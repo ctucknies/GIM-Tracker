@@ -432,7 +432,9 @@ async function renderGroup() {
         return;
     }
 
-    const wikiItems = JSON.parse(await fetch('data/clog_items_wiki.json').then(r=>r.text()));
+    const wikiItemsRes = await fetch('data/clog_items_wiki.json');
+    if (!wikiItemsRes.ok) { clogEl.innerHTML = '<p class="empty-msg">Missing clog_items_wiki.json data file.</p>'; return; }
+    const wikiItems = JSON.parse(await wikiItemsRes.text());
     const clogItemsById = new Map();
     for (const key of Object.keys(wikiItems)) {
         const entry = wikiItems[key];

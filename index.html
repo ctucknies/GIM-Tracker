@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DryKeys — Collection Log</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=PT+Serif:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="loading" class="loading">Connecting to server...</div>
+    <div id="error" class="error hidden">Connection failed. <a href="/">Retry</a></div>
+
+    <div id="content" class="hidden">
+        <div class="frame">
+            <header class="frame-header">
+                <div class="header-left">
+                    <h1 id="player-title">DryKeys</h1>
+                    <span id="header-meta" class="header-meta"></span>
+                </div>
+                <div class="player-switcher">
+                    <button class="player-btn active" data-player="Drykeys" onclick="switchPlayer('Drykeys')">DryKeys</button>
+                    <button class="player-btn" data-player="Salisa Taka" onclick="switchPlayer('Salisa Taka')">Salisa Taka</button>
+                    <button class="player-btn" data-player="Group" onclick="switchPlayer('Group')">Group</button>
+                </div>
+            </header>
+
+            <section id="player-summary" class="panel"></section>
+
+            <nav class="tab-bar" id="tab-bar">
+                <button class="tab active" data-tab="skills">Skills</button>
+                <button class="tab" data-tab="bosses">Bosses</button>
+                <button class="tab" data-tab="loot">Collection Log</button>
+                <button class="tab" data-tab="activities">Activities</button>
+                <button class="tab" data-tab="achievements">Achievements</button>
+            </nav>
+
+            <div class="panel-body">
+                <div class="tab-content" id="skills-tab"></div>
+                <div class="tab-content hidden" id="bosses-tab"></div>
+                <div class="tab-content hidden" id="loot-tab"></div>
+                <div class="tab-content hidden" id="activities-tab"></div>
+                <div class="tab-content hidden" id="achievements-tab"></div>
+                <div class="tab-content hidden" id="group-bosses-tab"></div>
+                <div class="tab-content hidden" id="group-clog-tab"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

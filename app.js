@@ -621,22 +621,25 @@ function switchPlayer(name) {
     currentPlayer = name;
     document.querySelectorAll('.player-btn').forEach(b => b.classList.toggle('active', b.dataset.player === name));
     document.getElementById('player-title').textContent = name;
-    // Restore normal tab bar
+    // Remember which tab was active before switching
+    const activeTab = document.querySelector('.tab.active');
+    const activeTabId = activeTab ? activeTab.dataset.tab : 'skills';
+    // Restore normal tab bar, preserving active tab
     document.getElementById('tab-bar').innerHTML = `
-        <button class="tab active" data-tab="skills">Skills</button>
-        <button class="tab" data-tab="bosses">Bosses</button>
-        <button class="tab" data-tab="loot">Collection Log</button>
-        <button class="tab" data-tab="activities">Activities</button>
-        <button class="tab" data-tab="achievements">Achievements</button>
+        <button class="tab${activeTabId==='skills'?' active':''}" data-tab="skills">Skills</button>
+        <button class="tab${activeTabId==='bosses'?' active':''}" data-tab="bosses">Bosses</button>
+        <button class="tab${activeTabId==='loot'?' active':''}" data-tab="loot">Collection Log</button>
+        <button class="tab${activeTabId==='activities'?' active':''}" data-tab="activities">Activities</button>
+        <button class="tab${activeTabId==='achievements'?' active':''}" data-tab="achievements">Achievements</button>
     `;
     document.getElementById('player-summary').classList.remove('hidden');
     document.getElementById('content').classList.add('hidden');
     document.getElementById('loading').classList.remove('hidden');
-    init();
+    init(activeTabId);
 }
 window.switchPlayer = switchPlayer;
 
-async function init() {
+async function init(activeTab) {
     try {
         const [player,achs,clog]=await Promise.all([getPlayer(),getAchievements(),getClog()]);
         currentPlayerWom = player;
@@ -647,6 +650,11 @@ async function init() {
         renderAchievements(achs);
         renderClog(clog);
         setupTabs();
+        // Show the correct tab
+        if (activeTab && activeTab !== 'skills') {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+            document.getElementById(activeTab + '-tab').classList.remove('hidden');
+        }
         document.getElementById('loading').classList.add('hidden');
         document.getElementById('content').classList.remove('hidden');
     } catch(e) {
